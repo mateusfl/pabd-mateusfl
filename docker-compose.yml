@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:17
+    container_name: dbadmin-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      # Dados do banco (persistem entre `docker compose down` / `up`)
+      - pgdata:/var/lib/postgresql/data
+      # Scripts .sql do projeto, disponíveis dentro do container em /sql
+      - ./scripts:/scripts
+      - ./listas:/listas
+      - ./utils:/utils
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
